@@ -1,0 +1,45 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage, amsmath, amsthm, mathtools, algorithmic, algorithm, caption, graphicx}
+\graphicspath{ {./} }
+\setlength{\parindent}{0in}
+\setlength{\parskip}{2ex}
+
+\begin{document}
+\begin{minipage}[t]{0.5\textwidth}
+\Large
+CS 498 Machine Learning System \\
+Homework 1
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.5\textwidth}
+\begin{flushright}
+\Large
+Xiaoyang Chen (xc52)
+\end{flushright}
+\end{minipage}
+
+\hrulefill
+\begin{enumerate}
+
+\item[1.] Given a transformer with a model hidden dimension of 768 with 12 attention heads, what is the head hidden dimension? \\
+\textbf{Answer}: $d_{head} = d_{model} / h = 768 / 12 = 64$. \\
+
+\item[2.] Assume that we have a sequence length of $s$ tokens, what is the per-token time-complexity of self-attention using the KV-cache? \\
+\textbf{Answer}: For each new token, we need $O(d_{model}^2)$ to compute $Q, K, V$, $O(s \cdot d_{model})$ to compute dot product with $s$ keys, and $O(d_{model}^2)$ for output. So the per-token time-complexity is $O(d_{model}^2 + s \cdot d_{model})$. \\
+
+\item[3.]  During the training of Deepseek V3, what data-type are the optimizer master weights stored in? \\
+\textbf{Answer}: FP32. \\
+
+\item[4.]  Given a transformer with $L$ = 61 layers, $h$ = 128 heads per layer, and $d_k$ = 128 head dimension, what is the total number of kv cache entries per token when using MHA and MQA. \\
+\textbf{Answer}: When using MHA, we have $d_k * 2 * h * L = 128 * 2 * 128* 61 = 1998848$ entries per token. When using MQA, all heads in one layer share the save KV. So total number of entries per token becomes $d_k * 2 * 1 * L = 128 * 2 * 1* 61 = 15616$. \\
+
+\item[5.]  Given a standard MHA architecture with $L$ = 64 layers, $d_{model}$ = 8192 model hidden dimension, $h$ = 32 heads per layer, $d_k$ = 256 head dimension, and $n_{tokens}$ = 65536, what is the total number of parameters and memory required to store the weights in bf16, assuming an MLP up-down projection factor of 4? Exclude biases, layernorm, and positional encoding parameters. Focus primarily on the token embeddings, attention, and MLP modules. \\
+\textbf{Answer}: \\
+Token embeddings: $n_{tokens} \times d_{model} = 65536 \times 8192 = 536870912$. \\
+Attention: $d_{model} \times (h \cdot d_k) = 8192 \times 8192 = 67108864$. We have Q, K, V and output projections so total become $67108864 \times 4 = 268435456$. \\
+MLP modules: We have $d_{ff} = d_{model} \times 4 = 8192 \times 4 = 32768$. So total number of parameters is $2 \times d_{model} \times d_{ff} = 2 \times 8192 \times 32768 = 536870912$. \\
+Total: 64 layers in total we have: $64 \times (268435456 + 536870912) + 536870912 = 52076478464$ parameters. The total memory usage is $52076478464 \times 2 = 104152956928$ bytes, which is about 104GB or 97GiB.
+
+\end{enumerate}
+
+\end{document}
