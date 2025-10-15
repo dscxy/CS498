@@ -11,7 +11,15 @@ def reduce_scatter(chunks, tmp, world, rank, left, right):
     # your code here: follow slides instruction: do counter-clockwise iteration
     #                                                                   #
     #                                                                   #
-    return
+    for s in range(world - 1):
+        send_idx = (rank - s) % world
+        recv_idx = (rank - s - 1) % world
+        send_s = dist.isend(tensor=chunks[send_idx], dst=right)
+        recv_r = dist.irecv(tensor=tmp, src=left)
+        recv_r.wait()
+        send_s.wait()
+        chunks[recv_idx] += tmp
+    return (rank + 1) % world
         
 def all_gather(chunks, tmp, current, world, rank, left, right):
     #                                                                   #
@@ -19,7 +27,16 @@ def all_gather(chunks, tmp, current, world, rank, left, right):
     # your code here: follow slides instruction: do counter-clockwise iteration
     #                                                                   #
     #                                                                   #
-    return
+    cur = current
+    for s in range(world - 1):
+        send_idx = cur
+        recv_idx = (cur - 1) % world
+        send_r = dist.isend(tensor=chunks[send_idx], dst=right)
+        recv_r = dist.irecv(tensor=tmp, src=left)
+        recv_r.wait()
+        send_r.wait()
+        chunks[recv_idx].copy_(tmp)
+        cur = recv_idx
 
 def ring_allreduce_(tensor: torch.Tensor, world_size = None, rankid = None):
     """In-place ring all-reduce (SUM, optional average) using isend/irecv."""
@@ -40,7 +57,10 @@ def ring_allreduce_(tensor: torch.Tensor, world_size = None, rankid = None):
     #                                                                   #
     #                                                                   #
     #So, fill zeros at the end of flat to generate padded_flat
-    padded_flat = None # modify this line and fill correct value into padded_flat
+    padded_num = chunk * world
+    padded_flat = torch.zeros(padded_num, dtype=flat.dtype, device=flat.device)
+    if n > 0:
+        padded_flat[:n].copy_(flat)
     chunks = [padded_flat[i*chunk:(i+1)*chunk] for i in range(world)]
 
     #                                                                   #
@@ -51,6 +71,10 @@ def ring_allreduce_(tensor: torch.Tensor, world_size = None, rankid = None):
     #                                                                   #
     #we provide the reduce_scatter and all_gather func prototype for you
     # You may adjust the function signature (input structure) of `reduce_scatter` and `all_gather` if needed.
+    chunks = [padded_flat[i * chunk: (i + 1) * chunk] for i in range(world)]
+    tmp = torch.empty_like(chunks[0])
+    current = reduce_scatter(chunks, tmp, world, rank, left, right)
+    all_gather(chunks, tmp, current, world, rank, left, right)
     
     # stitch & unpad  
     flat /= world
