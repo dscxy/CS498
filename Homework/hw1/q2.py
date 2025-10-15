@@ -16,6 +16,12 @@ def server(params, opt, world):
     # your code here: receive gradients form worker, and add them to agg#
     #                                                                   #
     #                                                                   #
+    for src in range(1, world):
+        recv_buf = torch.empty_like(flat_grad)
+        r = dist.irecv(tensor=recv_buf, src=src)
+        r.wait()
+        agg += recv_buf
+    agg /= world
 
     synced_grads = _unflatten_dense_tensors(agg, [p.grad for p in params])
     # ---- set averaged grads locally & step ----
@@ -30,6 +36,9 @@ def server(params, opt, world):
     # your code here: send packed 1-D parameter tensor to all workers   #
     #                                                                   #
     #                                                                   #
+    for dst in range(1, world):
+        s = dist.isend(tensor=flat_param, dst=dst)
+        s.wait()
 
 def worker(params):
     flat_grad = _flatten_dense_tensors([p.grad for p in params]).contiguous()
@@ -40,6 +49,8 @@ def worker(params):
     # your code here: send packed 1-D gradient to server
     #                                                                   #
     #                                                                   #
+    s = dist.isend(tensor=flat_grad, dst=0)
+    s.wait()
 
     # ---- receive updated params, write into local model ----
     
@@ -48,7 +59,10 @@ def worker(params):
     # your code here: please get correct 1-D packed parameter from server
     #           And then unpacked it and store in synced_params
     #                                                                   #
-    synced_params = None #you should  assign correct value for synced_params#
+    flat_pram_buf = _flatten_dense_tensors([p.data for p in params]).contiguous()
+    r = dist.irecv(tensor=flat_pram_buf, src=0)
+    r.wait()
+    synced_params = _unflatten_dense_tensors(flat_pram_buf, [p.data for p in params])
 
 
     # ---- syncronize the parameters ----
