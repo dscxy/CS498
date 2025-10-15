@@ -18,7 +18,7 @@ def reduce_scatter(chunks, tmp, world, rank, left, right):
         recv_r = dist.irecv(tensor=tmp, src=left)
         recv_r.wait()
         send_s.wait()
-        chunks[recv_idx] += tmp
+        chunks[recv_idx].add_(tmp)
     return (rank + 1) % world
         
 def all_gather(chunks, tmp, current, world, rank, left, right):
@@ -71,12 +71,11 @@ def ring_allreduce_(tensor: torch.Tensor, world_size = None, rankid = None):
     #                                                                   #
     #we provide the reduce_scatter and all_gather func prototype for you
     # You may adjust the function signature (input structure) of `reduce_scatter` and `all_gather` if needed.
-    chunks = [padded_flat[i * chunk: (i + 1) * chunk] for i in range(world)]
     tmp = torch.empty_like(chunks[0])
     current = reduce_scatter(chunks, tmp, world, rank, left, right)
     all_gather(chunks, tmp, current, world, rank, left, right)
     
     # stitch & unpad  
-    flat /= world
-    tensor.view(-1).copy_(flat[:n])
+    padded_flat /= world
+    tensor.view(-1).copy_(padded_flat[:n])
     return
