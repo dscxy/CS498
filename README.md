@@ -49,7 +49,7 @@ Note that this course is **NOT focused on AI methods**.  Instead, we will *focus
 | Oct 24     | Batch Serving Techniques                               | Fan Lai       | [Slides](./Slides/L13_inference_scheduling.pdf)        |   [DistServe](https://arxiv.org/abs/2401.09670)            |
 | Oct 29     | Paged Attention                                        | Fan Lai       | [Slides](./Slides/L14_paged_attention.pdf)         |    [SGLang](https://arxiv.org/abs/2312.07104)                     |
 | Oct 31     | Adaptive KV                                            | Fan Lai       | [Slides](./Slides/L15_adaptive_kv.pdf)         |    Assignment 2 Released            |
-| Nov 5      | Quantization                                           | Fan Lai       |        |   [AWQ](https://arxiv.org/abs/2306.00978)                  |
+| Nov 5      | Quantization                                           | Fan Lai       | [Slides](./Slides/L16_quantization.pdf)        |   [AWQ](https://arxiv.org/abs/2306.00978)                  |
 | Nov 7      |  MoE Efficiency                          | Fan Lai       |        |    Mid-semester Report Due            |			
 | Nov 12     | Advanced topics: RAG Systems                               | Fan Lai       |        |    [MoonCake](https://www.usenix.org/conference/fast25/presentation/qin)             |
 | Nov 14     | Advanced topics: Caching GenAI                         | Yifan Yu       |        |  [NIAVANA](https://www.usenix.org/conference/nsdi24/presentation/agarwal-shubham)      |
