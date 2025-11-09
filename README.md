@@ -52,7 +52,7 @@ Note that this course is **NOT focused on AI methods**.  Instead, we will *focus
 | Nov 5      | Quantization                                           | Fan Lai       | [Slides](./Slides/L16_quantization.pdf)        |   [AWQ](https://arxiv.org/abs/2306.00978)                  |
 | Nov 7      |  MoE Efficiency                          			| Fan Lai       | [Slides](./Slides/L17_moe_efficiency.pdf)       |    Mid-semester Report Due            |			
 | Nov 12     | Advanced topics: RAG Systems                               | Fan Lai       |        |    [MoonCake](https://www.usenix.org/conference/fast25/presentation/qin)             |
-| Nov 14     | Advanced topics: Caching GenAI                         | Yifan Yu       |        |  [NIAVANA](https://www.usenix.org/conference/nsdi24/presentation/agarwal-shubham)      |
+| Nov 14     | Advanced topics: Caching GenAI                         | Yifan Yu       |        |  [NIRVANA](https://www.usenix.org/conference/nsdi24/presentation/agarwal-shubham)      |
 | Nov 19     | Guest Lecture                                   			  |  Zhengzhong Tu     |        |       Assignment 2 Due,  Assignment 3 Released (for 4-credit students)                |
 | Nov 21     |      Buffer                                      |               |        |                        |
 | Nov 22-30  | Fall Break                                             |               |        |                        |
